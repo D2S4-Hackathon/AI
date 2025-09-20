@@ -43,7 +43,7 @@ class Settings:
         # OpenAI 요약 설정
         self.OPENAI_MODEL: str = os.getenv('OPENAI_MODEL', 'gpt-4-turbo-preview')
         self.MAX_SUMMARY_LENGTH: int = int(os.getenv('MAX_SUMMARY_LENGTH', '800'))  # 기본값을 800자로 증가
-        self.MIN_TEXT_LENGTH_FOR_SUMMARY: int = 10  # 임시로 10자로 줄임
+        self.MIN_TEXT_LENGTH_FOR_SUMMARY: int = 1  # 최소 길이를 1자로 설정 (사실상 제거)
 
     def validate(self):
         if not self.NAVER_CLIENT_ID or not self.NAVER_CLIENT_SECRET:
