@@ -13,13 +13,13 @@ class SummaryRequest(BaseModel):
     language: Optional[str] = "ko"
 
 class SummaryResponse(BaseModel):
-    status: str
-    # original_text: Optional[str] = None
+    success: bool
+    original_text: Optional[str] = None
     summary: Optional[str] = None
-    # original_length: Optional[int] = None
-    # summary_length: Optional[int] = None
-    # compression_ratio: Optional[float] = None
-    # error: Optional[str] = None
+    original_length: Optional[int] = None
+    summary_length: Optional[int] = None
+    compression_ratio: Optional[float] = None
+    error: Optional[str] = None
 
 class LanguageInfo(BaseModel):
     code: str
