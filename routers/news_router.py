@@ -13,7 +13,8 @@ def select_news(news_session_id: str, query: str):
         raise HTTPException(status_code=404, detail="뉴스 세션이 만료되었거나 기사를 찾을 수 없습니다.")
 
     return {
-        "type": "navigation",
-        "response": f"선택하신 기사 → '{article['title']}'",
+        "status": "success",
+        # "type": "navigation",
+        "title": f"선택하신 기사 → '{article['title']}'",
         "url": article["url"]
     }

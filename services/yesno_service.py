@@ -35,8 +35,9 @@ def handle_yes_no(answer: str, pending_session_id: str, context_session_id: str)
     if answer.strip() == "아니요":
         clear_pending_query(pending_session_id)
         return {
-            "type": "info",
-            "response": "네, 알겠습니다. 다른 질문을 해주세요."
+            "status": "success",
+            # "type": "info",
+            "response": "네, 알겠습니다."
         }
 
     # "네" 처리
@@ -79,7 +80,8 @@ def handle_yes_no(answer: str, pending_session_id: str, context_session_id: str)
         if category == "term":
             clean_keyword = keyword.split()[0]
             return {
-                "type": "navigation",
+                "status": "success",
+                # "type": "navigation",
                 "response": f"'{clean_keyword}'에 대한 어학사전 링크를 보여드립니다.",
                 "url": f"https://dict.naver.com/search.dict?query={clean_keyword}"
             }
@@ -99,7 +101,8 @@ def handle_yes_no(answer: str, pending_session_id: str, context_session_id: str)
             r.setex(news_key, 3600, json.dumps(articles, ensure_ascii=False))
 
             return {
-                "type": "articles",
+                "status": "success",
+                # "type": "articles",
                 "response": f"'{keyword}' 관련 뉴스를 보여드립니다.",
                 "news_session_id": news_session_id,  # 프론트로 전달
                 "articles": articles

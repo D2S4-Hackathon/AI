@@ -36,7 +36,6 @@ def load_content(inner_text: str, links: List[Link], expire: int = 3600):
     r.setex(key, expire, json.dumps(context_data, ensure_ascii=False))
     return {
         "status": "success",           # 처리 상태
-        "message": "Content saved to Redis",
         "context_session_id": session_id,      # 반드시 반환
         "links_count": len(links)      # 저장된 링크 개수
     }
@@ -74,12 +73,14 @@ def handle_query(session_id:str, query: str):
         best_link = find_best_link(query, links)
         if best_link:
             return {
-                "type": "navigation",
+                "status" : "success",
+                # "type": "navigation",
                 "response": f"{best_link.text} 페이지로 이동합니다.",
                 "url": best_link.url
             }
         return {
-            "type": "navigation",
+            "status": "success",
+            # "type": "navigation",
             "response": "이동할 링크가 없습니다."
         }
 
@@ -115,12 +116,14 @@ def handle_query(session_id:str, query: str):
     if "해당 내용에 대해 찾아" in answer:
         session_id = save_pending_query(query)  # Redis에 저장
         return {
-            "type": "summary",
+            "status": "success",
+            # "type": "summary",
             "response": "본문에는 없습니다. 해당 내용에 대해 찾아드릴까요? 네/아니요로 대답해주세요.",
             "pending_session_id": session_id
         }
 
     return {
-        "type": "summary",
+        "status": "success",
+        # "type": "summary",
         "response": answer
     }

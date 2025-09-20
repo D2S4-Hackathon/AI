@@ -61,7 +61,7 @@ async def summarize_text(context_session_id: str, language: str = "ko"):
 
         # 수정 포인트: result 전체가 아니라 SummaryResponse에 맞춰 반환
         return SummaryResponse(
-            success=result.success,
+            status="success",
             summary=result.summary if result.success else ""
         )
 
