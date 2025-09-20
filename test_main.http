@@ -37,6 +37,7 @@ Content-Type: application/json
   "language": "ko"
 }
 
+
 ### 6. 요약 서비스 상태 확인
 GET http://127.0.0.1:8000/summary/status
 Accept: application/json

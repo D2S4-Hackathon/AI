@@ -79,34 +79,15 @@ def validate_language(lang: str) -> None:
 
 def validate_summary_text(text: str) -> None:
   """요약할 텍스트의 유효성을 검사합니다."""
-  from config.naver_stt_settings import settings
   
   if not text or not text.strip():
     raise HTTPException(status_code=400, detail="요약할 텍스트가 비어있습니다.")
   
-  if len(text.strip()) < settings.MIN_TEXT_LENGTH_FOR_SUMMARY:
-    raise HTTPException(
-        status_code=400,
-        detail=f"텍스트가 너무 짧습니다. 최소 {settings.MIN_TEXT_LENGTH_FOR_SUMMARY}자 이상이어야 합니다."
-    )
-  
-  # 최대 길이 제한 (너무 긴 텍스트는 처리 시간이 오래 걸림)
-  max_text_length = 10000  # 10,000자 제한
-  if len(text) > max_text_length:
-    raise HTTPException(
-        status_code=400,
-        detail=f"텍스트가 너무 깁니다. 최대 {max_text_length}자까지 처리 가능합니다."
-    )
+  # 모든 길이 제한 제거 - 빈 텍스트만 검증
 
 
-def validate_summary_parameters(max_length: int = None, language: str = None) -> None:
+def validate_summary_parameters(language: str = None) -> None:
   """요약 매개변수의 유효성을 검사합니다."""
-  
-  if max_length is not None:
-    if max_length < 50:
-      raise HTTPException(status_code=400, detail="요약 길이는 최소 50자 이상이어야 합니다.")
-    if max_length > 2000:
-      raise HTTPException(status_code=400, detail="요약 길이는 최대 2000자까지 가능합니다.")
   
   if language is not None:
     valid_summary_languages = ["ko", "en", "ja", "zh"]

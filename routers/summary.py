@@ -27,14 +27,13 @@ async def summarize_text(request: SummaryRequest):
     
     # 입력 검증
     validate_summary_text(request.text)
-    validate_summary_parameters(request.max_length, request.language)
+    validate_summary_parameters(request.language)
     
     try:
         logger.info(f"텍스트 요약 요청: 길이={len(request.text)}자, 언어={request.language}")
         
         result = openai_service.summarize_text(
             text=request.text,
-            max_length=request.max_length,
             language=request.language
         )
         
