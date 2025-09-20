@@ -14,14 +14,14 @@ def custom_openapi(app: FastAPI):
     context_path = os.getenv("CONTEXT_PATH", "") or "/"
 
     openapi_schema = get_openapi(
-        title="HearGo API 명세서",
+        title="ONier API 명세서",
         version="1.0",
-        description="HearGo Swagger API Documentation",
+        description="ONier Swagger API Documentation",
         routes=app.routes,
         servers=[
             {
                 "url": context_path,
-                "description": "HearGo Server"
+                "description": "ONier Server"
             }
         ]
     )
@@ -49,8 +49,8 @@ def setup_swagger(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="HearGo API",
-        description="HearGo Swagger API Documentation",
+        title="ONier API",
+        description="ONier Swagger API Documentation",
         version="1.0",
         docs_url=None, 
         redoc_url=None
