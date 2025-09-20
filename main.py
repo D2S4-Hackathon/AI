@@ -4,8 +4,8 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config.naver_stt_settings import settings, logger
+from config.swagger_config import setup_swagger  # setup_swagger는 app.openapi만 바꾸도록
 
-# 라우터 임포트
 from routers import stt
 try:
     from routers import health
@@ -20,8 +20,12 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/swagger-ui",
     redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
+setup_swagger(app)
+
+# CORS
 cors_origins = getattr(settings, "CORS_ORIGINS", ["*"])
 if isinstance(cors_origins, str):
     cors_origins = [o.strip() for o in cors_origins.split(",") if o.strip()]
