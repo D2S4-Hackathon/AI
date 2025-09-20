@@ -1,0 +1,41 @@
+name: onere-stack
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: onere-api
+    environment:
+      TZ: Asia/Seoul
+      REDIS_URL: redis://default:${REDIS_PASSWORD:-change_me}@redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks: [backend]
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: onere-redis
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-change_me}"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-change_me}", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped
+    networks: [backend]
+
+networks:
+  backend:
+    driver: bridge
