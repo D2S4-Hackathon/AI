@@ -4,7 +4,7 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config.naver_stt_settings import settings, logger
-from routers import content_router
+from routers import content_router, yesno_router
 
 # 라우터 임포트
 from routers import stt
@@ -45,6 +45,7 @@ app.add_middleware(
 # 라우터 등록
 app.include_router(stt.router)
 app.include_router(content_router.router)
+app.include_router(yesno_router.router)
 if HAS_SUMMARY:
     app.include_router(summary.router)
 if HAS_HEALTH:
