@@ -3,7 +3,6 @@ from typing import Optional
 from config.naver_stt_settings import settings, logger
 from models.stt_models import SummaryResponse
 
-
 class OpenAIService:
     """OpenAI API를 활용한 텍스트 요약 서비스"""
     
@@ -50,7 +49,21 @@ class OpenAIService:
             
             # 언어별 프롬프트 설정
             prompts = {
-                "ko": f"다음 텍스트를 {target_length}자 이내로 한국어로 요약해주세요. 핵심 내용을 간결하고 명확하게 정리해주세요.",
+                "ko": """당신은 뉴스 분석 AI입니다. 입력된 텍스트를 분석하여 다음과 같이 응답해주세요:
+
+**케이스 1: 네이버 검색 결과 페이지인 경우**
+- 텍스트에 "네이버", "검색결과", "관련도순", "최신순" 등이 포함되어 있으면
+- "네이버에서 [주제] 관련 뉴스를 검색하면 다음과 같은 헤드라인들을 볼 수 있습니다:"로 시작
+- 발견된 뉴스 헤드라인들을 "첫째, [제목] - [한 줄 요약]" "둘째, [제목] - [한 줄 요약]" 형식으로 순서대로 나열
+- "더 자세한 정보가 필요한 뉴스가 있다면 해당 뉴스 내용을 알려주세요."로 마무리
+
+**케이스 2: 구체적인 뉴스 기사인 경우**
+- 특정 언론사 기사 내용이 포함되어 있으면
+- 기사의 핵심 내용을 3-4문장으로 간결하게 요약
+- 5W1H (누가, 언제, 어디서, 무엇을, 왜, 어떻게)를 중심으로 정리
+- 중요한 키워드와 수치는 정확히 포함
+
+현재 입력된 텍스트를 분석하여 적절한 형식으로 응답해주세요.""",
                 "en": f"Please summarize the following text in English within {target_length} characters. Focus on key points and be concise.",
                 "ja": f"次のテキストを{target_length}文字以内で日本語で要約してください。要点を簡潔に整理してください。",
                 "zh": f"请用中文在{target_length}字以内总结以下文本。请简洁明确地整理要点。"
