@@ -13,6 +13,9 @@ class Settings:
         # 네이버 API 설정
         self.NAVER_CLIENT_ID: str = os.getenv('NAVER_CLIENT_ID')
         self.NAVER_CLIENT_SECRET: str = os.getenv('NAVER_CLIENT_SECRET')
+        
+        # OpenAI API 설정
+        self.OPENAI_API_KEY: str = os.getenv('OPENAI_API_KEY')
 
         # API 설정
         self.NAVER_STT_URL: str = "https://naveropenapi.apigw.ntruss.com/recog/v1/stt"
@@ -36,10 +39,20 @@ class Settings:
         # 음성 주문 설정
         self.VOICE_ORDER_CONFIDENCE_THRESHOLD: float = 0.6
         self.MAX_MENU_CANDIDATES: int = 5
+        
+        # OpenAI 요약 설정
+        self.OPENAI_MODEL: str = os.getenv('OPENAI_MODEL', 'gpt-4-turbo-preview')
+        self.MAX_SUMMARY_LENGTH: int = int(os.getenv('MAX_SUMMARY_LENGTH', '800'))  # 기본값을 800자로 증가
+        self.MIN_TEXT_LENGTH_FOR_SUMMARY: int = 100
 
     def validate(self):
         if not self.NAVER_CLIENT_ID or not self.NAVER_CLIENT_SECRET:
             raise ValueError("NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET을 .env 파일에 설정해주세요.")
+        
+        # OpenAI API 키는 선택사항 (요약 기능 사용 시에만 필요)
+        if not self.OPENAI_API_KEY:
+            logger.warning("OPENAI_API_KEY가 설정되지 않았습니다. 요약 기능을 사용할 수 없습니다.")
+        
         return True
 
 # 전역 설정 인스턴스

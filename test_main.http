@@ -1,11 +1,44 @@
 # Test your FastAPI endpoints
 
+### 1. Root endpoint - 서비스 정보 확인
 GET http://127.0.0.1:8000/
 Accept: application/json
 
-###
+### 2. Health Check - 서비스 상태 확인
+GET http://127.0.0.1:8000/health
+Accept: application/json
 
-GET http://127.0.0.1:8000/hello/User
+### 3. 지원 언어 목록 확인
+GET http://127.0.0.1:8000/languages
+Accept: application/json
+
+### 4. STT 서비스 - 음성 파일 업로드 (form-data로 테스트)
+POST http://127.0.0.1:8000/stt/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="audio_file"; filename="test.wav"
+Content-Type: audio/wav
+
+< ./path/to/your/audio/file.wav
+--boundary
+Content-Disposition: form-data; name="lang"
+
+Kor
+--boundary--
+
+### 5. 텍스트 요약 서비스
+POST http://127.0.0.1:8000/summary/text
+Content-Type: application/json
+
+{
+  "text": "여기에 요약할 긴 텍스트를 입력하세요. 이 텍스트는 충분히 길어야 하며, 100자 이상이어야 요약 기능이 작동합니다. 음성 인식 기술은 최근 몇 년간 빠르게 발전해왔습니다. 특히 딥러닝과 신경망 기술의 도입으로 인해 인식 정확도가 크게 향상되었습니다.",
+  "max_length": 100,
+  "language": "ko"
+}
+
+### 6. 요약 서비스 상태 확인
+GET http://127.0.0.1:8000/summary/status
 Accept: application/json
 
 ###

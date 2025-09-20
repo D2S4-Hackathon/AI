@@ -11,6 +11,15 @@ class STTException(Exception):
     super().__init__(self.message)
 
 
+class SummaryException(Exception):
+  """요약 관련 예외"""
+
+  def __init__(self, message: str, code: str = None):
+    self.message = message
+    self.code = code
+    super().__init__(self.message)
+
+
 class VoiceOrderException(Exception):
 
   def __init__(self, message: str, code: str = None):
@@ -68,6 +77,46 @@ def validate_language(lang: str) -> None:
     )
 
 
+def validate_summary_text(text: str) -> None:
+  """요약할 텍스트의 유효성을 검사합니다."""
+  from config.naver_stt_settings import settings
+  
+  if not text or not text.strip():
+    raise HTTPException(status_code=400, detail="요약할 텍스트가 비어있습니다.")
+  
+  if len(text.strip()) < settings.MIN_TEXT_LENGTH_FOR_SUMMARY:
+    raise HTTPException(
+        status_code=400,
+        detail=f"텍스트가 너무 짧습니다. 최소 {settings.MIN_TEXT_LENGTH_FOR_SUMMARY}자 이상이어야 합니다."
+    )
+  
+  # 최대 길이 제한 (너무 긴 텍스트는 처리 시간이 오래 걸림)
+  max_text_length = 10000  # 10,000자 제한
+  if len(text) > max_text_length:
+    raise HTTPException(
+        status_code=400,
+        detail=f"텍스트가 너무 깁니다. 최대 {max_text_length}자까지 처리 가능합니다."
+    )
+
+
+def validate_summary_parameters(max_length: int = None, language: str = None) -> None:
+  """요약 매개변수의 유효성을 검사합니다."""
+  
+  if max_length is not None:
+    if max_length < 50:
+      raise HTTPException(status_code=400, detail="요약 길이는 최소 50자 이상이어야 합니다.")
+    if max_length > 2000:
+      raise HTTPException(status_code=400, detail="요약 길이는 최대 2000자까지 가능합니다.")
+  
+  if language is not None:
+    valid_summary_languages = ["ko", "en", "ja", "zh"]
+    if language not in valid_summary_languages:
+      raise HTTPException(
+          status_code=400,
+          detail=f"지원하지 않는 요약 언어입니다. 사용 가능한 언어: {valid_summary_languages}"
+      )
+
+
 def validate_voice_order_result(order_info: dict) -> None:
   from config.naver_stt_settings import settings
 
@@ -116,5 +165,37 @@ def handle_voice_order_errors(error: Exception) -> JSONResponse:
           "success": False,
           "error": "서버 내부 오류가 발생했습니다.",
           "code": "INTERNAL_ERROR"
+        }
+    )
+
+
+def handle_summary_errors(error: Exception) -> JSONResponse:
+  """요약 관련 오류를 처리합니다."""
+  if isinstance(error, SummaryException):
+    return JSONResponse(
+        status_code=400,
+        content={
+          "success": False,
+          "error": error.message,
+          "code": error.code
+        }
+    )
+  elif isinstance(error, HTTPException):
+    return JSONResponse(
+        status_code=error.status_code,
+        content={
+          "success": False,
+          "error": error.detail,
+          "code": "HTTP_EXCEPTION"
+        }
+    )
+  else:
+    logger.error(f"요약 처리 중 예상치 못한 오류: {str(error)}")
+    return JSONResponse(
+        status_code=500,
+        content={
+          "success": False,
+          "error": "요약 처리 중 서버 내부 오류가 발생했습니다.",
+          "code": "SUMMARY_INTERNAL_ERROR"
         }
     )
