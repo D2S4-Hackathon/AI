@@ -18,10 +18,23 @@ async def health_check():
   except:
     stt_available = False
 
+  # OpenAI 서비스 사용 가능 여부 확인
+  try:
+    from services.openai_service import OpenAIService
+    openai_available = True
+    try:
+      openai_service = OpenAIService()
+      openai_available = openai_service.get_service_status()
+    except:
+      openai_available = False
+  except:
+    openai_available = False
+
   return HealthResponse(
       status="healthy",
-      service="Naver STT API",
-      stt_service_available=stt_available
+      service="Naver STT & OpenAI Summary API",
+      stt_service_available=stt_available,
+      openai_service_available=openai_available
   )
 
 

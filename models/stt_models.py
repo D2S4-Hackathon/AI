@@ -9,6 +9,20 @@ class STTResponse(BaseModel):
     details: Optional[str] = None
     code: Optional[str] = None
 
+class SummaryRequest(BaseModel):
+    text: str
+    max_length: Optional[int] = 500
+    language: Optional[str] = "ko"
+
+class SummaryResponse(BaseModel):
+    success: bool
+    original_text: Optional[str] = None
+    summary: Optional[str] = None
+    original_length: Optional[int] = None
+    summary_length: Optional[int] = None
+    compression_ratio: Optional[float] = None
+    error: Optional[str] = None
+
 class LanguageInfo(BaseModel):
     code: str
     name: str
@@ -20,3 +34,4 @@ class HealthResponse(BaseModel):
     status: str
     service: str
     stt_service_available: bool
+    openai_service_available: bool
