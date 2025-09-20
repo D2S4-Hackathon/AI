@@ -13,7 +13,7 @@ class SummaryRequest(BaseModel):
     language: Optional[str] = "ko"
 
 class SummaryResponse(BaseModel):
-    success: bool
+    status: str
     # original_text: Optional[str] = None
     summary: Optional[str] = None
     # original_length: Optional[int] = None
