@@ -2,6 +2,7 @@ from typing import List, Optional
 from models.content_model import Link
 from services.openai_service import OpenAIService  # OpenAIService 있는 파일 import
 import openai
+from utils.link_utils import find_best_link
 
 # 전역 저장소 (데모용)
 current_text: Optional[str] = None
@@ -21,16 +22,29 @@ def handle_query(query: str):
     if current_text is None:
         return {"error": "No content loaded yet"}
 
-    # 1) 이동 의도 판단: "보여줘"라는 단어 포함 여부
+    # # 1) 이동 의도 판단: "보여줘"라는 단어 포함 여부
+    # if "보여줘" in query:
+    #     for link in current_links:
+    #         if link.text in query:
+    #             return {
+    #                 "type": "navigation",
+    #                 "response": f"{link.text} 페이지로 이동합니다.",
+    #                 "url": link.url
+    #             }
+    #     # 링크 못 찾았을 경우
+    #     return {
+    #         "type": "navigation",
+    #         "response": "이동할 링크가 없습니다."
+    #     }
+
     if "보여줘" in query:
-        for link in current_links:
-            if link.text in query:
-                return {
-                    "type": "navigation",
-                    "response": f"{link.text} 페이지로 이동합니다.",
-                    "url": link.url
-                }
-        # 링크 못 찾았을 경우
+        best_link = find_best_link(query, current_links)
+        if best_link:
+            return {
+                "type": "navigation",
+                "response": f"{best_link.text} 페이지로 이동합니다.",
+                "url": best_link.url
+            }
         return {
             "type": "navigation",
             "response": "이동할 링크가 없습니다."
