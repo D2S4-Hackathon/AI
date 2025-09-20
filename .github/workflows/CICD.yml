@@ -23,8 +23,8 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}  /onier:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}  /onier:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/onier:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/onier:${{ github.sha }}
 
   deploy:
     needs: build-and-push
