@@ -45,6 +45,7 @@ def handle_query(query: str):
                 "role": "system",
                 "content": (
                     "너는 사용자가 제공한 문서를 기반으로만 답해야 한다. "
+                    "너가 아는 내용은 절대 말하지마. 오직 본문 안에서만 대답해줘"
                     "문서에 없는 내용은 '본문에는 없습니다. 해당 내용에 대해 찾아드릴까요? 네/아니요로 대답해주세요.' 라고 반드시 답해라." 
                     "필요하면 간단히 요약해서 알려줘."
                 )
@@ -64,7 +65,7 @@ def handle_query(query: str):
     answer = response.choices[0].message.content
 
     # 3) "본문에는 없습니다" → pending_query 저장
-    if "본문에는 없습니다" in answer:
+    if "해당 내용에 대해 찾아" in answer:
         session_id = save_pending_query(query)  # Redis에 저장
         return {
             "type": "summary",
