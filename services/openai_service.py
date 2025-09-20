@@ -24,36 +24,25 @@ class OpenAIService:
             logger.error(f"OpenAI 서비스 초기화 실패: {str(e)}")
             raise ValueError(f"OpenAI 서비스 초기화 실패: {str(e)}")
     
-    def summarize_text(self, text: str, max_length: Optional[int] = None, language: str = "ko") -> SummaryResponse:
+    def summarize_text(self, text: str, language: str = "ko") -> SummaryResponse:
         """
         텍스트를 요약합니다.
         
         Args:
             text (str): 요약할 텍스트
-            max_length (int, optional): 요약 최대 길이
             language (str): 요약 언어 ('ko', 'en', 'ja', 'zh')
         
         Returns:
             SummaryResponse: 요약 결과
         """
         try:
-            # 입력 텍스트 길이 검증
-            if len(text.strip()) < self.min_text_length:
-                return SummaryResponse(
-                    success=False,
-                    error=f"텍스트가 너무 짧습니다. 최소 {self.min_text_length}자 이상이어야 합니다."
-                )
-            
-            # 요약 길이 설정
-            target_length = max_length or self.max_summary_length
-            
             # 언어별 프롬프트 설정
             prompts = {
                 "ko": """당신은 뉴스 분석 AI입니다. 입력된 텍스트를 분석하여 다음과 같이 응답해주세요:
 
-**케이스 1: 네이버 검색 결과 페이지인 경우**
-- 텍스트에 "네이버", "검색결과", "관련도순", "최신순" 등이 포함되어 있으면
-- "네이버에서 [주제] 관련 뉴스를 검색하면 다음과 같은 헤드라인들을 볼 수 있습니다:"로 시작
+**케이스 1: 검색 결과 페이지인 경우**
+- 텍스트에 "검색결과", "관련도순", "최신순" 등이 포함되어 있으면
+- "[주제] 관련 뉴스를 검색하면 다음과 같은 헤드라인들을 볼 수 있습니다:"로 시작
 - 발견된 뉴스 헤드라인들을 "첫째, [제목] - [한 줄 요약]" "둘째, [제목] - [한 줄 요약]" 형식으로 순서대로 나열
 - "더 자세한 정보가 필요한 뉴스가 있다면 해당 뉴스 내용을 알려주세요."로 마무리
 
@@ -63,10 +52,7 @@ class OpenAIService:
 - 5W1H (누가, 언제, 어디서, 무엇을, 왜, 어떻게)를 중심으로 정리
 - 중요한 키워드와 수치는 정확히 포함
 
-현재 입력된 텍스트를 분석하여 적절한 형식으로 응답해주세요.""",
-                "en": f"Please summarize the following text in English within {target_length} characters. Focus on key points and be concise.",
-                "ja": f"次のテキストを{target_length}文字以内で日本語で要約してください。要点を簡潔に整理してください。",
-                "zh": f"请用中文在{target_length}字以内总结以下文本。请简洁明确地整理要点。"
+현재 입력된 텍스트를 분석하여 적절한 형식으로 응답해주세요."""
             }
             
             system_prompt = prompts.get(language, prompts["ko"])
@@ -78,7 +64,6 @@ class OpenAIService:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=min(target_length * 2, 1000),
                 temperature=0.3,
                 top_p=0.9
             )
