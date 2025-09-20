@@ -3,6 +3,7 @@ from models.content_model import Link
 from services.openai_service import OpenAIService  # OpenAIService 있는 파일 import
 import openai
 from utils.link_utils import find_best_link
+from utils.redis_utils import save_pending_query
 
 # 전역 저장소 (데모용)
 current_text: Optional[str] = None
@@ -58,7 +59,7 @@ def handle_query(query: str):
                 "role": "system",
                 "content": (
                     "너는 사용자가 제공한 문서를 기반으로만 답해야 한다. "
-                    "문서에 없는 내용은 모른다고 답해라. "
+                    "문서에 없는 내용은 '본문에는 없습니다. 해당 내용에 대해 찾아드릴까요? 네/아니요로 대답해주세요.' 라고 반드시 답해라." 
                     "필요하면 간단히 요약해서 알려줘."
                 )
             },
@@ -75,6 +76,15 @@ def handle_query(query: str):
     )
 
     answer = response.choices[0].message.content
+
+    # 3) "본문에는 없습니다" → pending_query 저장
+    if "본문에는 없습니다" in answer:
+        session_id = save_pending_query(query)  # Redis에 저장
+        return {
+            "type": "summary",
+            "response": "본문에는 없습니다. 해당 내용에 대해 찾아드릴까요? 네/아니요로 대답해주세요.",
+            "session_id": session_id
+        }
 
     return {
         "type": "summary",
