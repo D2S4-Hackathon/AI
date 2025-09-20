@@ -100,10 +100,16 @@ def handle_yes_no(answer: str, pending_session_id: str, context_session_id: str)
             news_key = f"news:{news_session_id}"
             r.setex(news_key, 3600, json.dumps(articles, ensure_ascii=False))
 
+            titles_summary = []
+            for idx, item in enumerate(articles, start=1):
+                titles_summary.append(f"{idx}번째 뉴스는 {item['title']} 입니다.")
+            titles_message = " ".join(titles_summary)  # "/" 대신 문장 이어붙이기
+
             return {
                 "status": "success",
                 # "type": "articles",
-                "response": f"'{keyword}' 관련 뉴스를 보여드립니다.",
+                # "response": f"'{keyword}' 관련 뉴스를 보여드립니다.",
+                "response": titles_message,
                 "news_session_id": news_session_id,  # 프론트로 전달
                 "articles": articles
             }
