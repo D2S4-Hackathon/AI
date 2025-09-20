@@ -11,7 +11,6 @@ class STTResponse(BaseModel):
 
 class SummaryRequest(BaseModel):
     text: str
-    max_length: Optional[int] = 500
     language: Optional[str] = "ko"
 
 class SummaryResponse(BaseModel):
