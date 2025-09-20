@@ -21,7 +21,22 @@ def handle_query(query: str):
     if current_text is None:
         return {"error": "No content loaded yet"}
 
-    # GPT에게 문서와 질문을 모두 제공
+    # 1) 이동 의도 판단: "보여줘"라는 단어 포함 여부
+    if "보여줘" in query:
+        for link in current_links:
+            if link.text in query:
+                return {
+                    "type": "navigation",
+                    "response": f"{link.text} 페이지로 이동합니다.",
+                    "url": link.url
+                }
+        # 링크 못 찾았을 경우
+        return {
+            "type": "navigation",
+            "response": "이동할 링크가 없습니다."
+        }
+
+    # 2) 이동 의도가 아니면 GPT로 문서 기반 답변
     response = openai.ChatCompletion.create(
         model="gpt-4o",
         messages=[
